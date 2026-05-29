@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+test -z "$(gofmt -l .)" || { echo "gofmt needed on:"; gofmt -l .; exit 1; }
+go vet ./...
+go build ./...
+go test ./... -race -count=1

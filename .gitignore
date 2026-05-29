@@ -1,0 +1,13 @@
+/reviews-api
+*.out
+.env
+data/
+web/node_modules/
+web/dist/
+plans
+reports
+ticket.md
+
+# claude-mem auto-generated per-directory context stubs (keep the root CLAUDE.md)
+**/CLAUDE.md
+!/CLAUDE.md
