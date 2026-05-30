@@ -202,7 +202,7 @@ cd web && bun run test       # frontend: ReviewCard render + useReviews hook (Vi
   the same window as the reviews list.
 - **App banner** — name + icon from the Lookup API, with an id fallback.
 - **UI niceties** — a selectable time window with silent auto-refresh, and client-side pagination.
-- **Swagger UI** at `/docs`.
+- **Swagger UI** at `/docs` (http://localhost:8080/docs).
 
 
 
