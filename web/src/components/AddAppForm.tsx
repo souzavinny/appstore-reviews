@@ -41,7 +41,7 @@ export function AddAppForm({
           placeholder="App Store id (e.g. 389801252)"
           inputMode="numeric"
           aria-label="App Store id"
-          className="w-60"
+          className="w-60 rounded-xl bg-card"
         />
         {error && <p className="text-xs text-destructive">{error}</p>}
       </div>

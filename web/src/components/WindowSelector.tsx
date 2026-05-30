@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const WINDOWS = [
   { label: "24h", hours: 24 },
@@ -14,18 +14,25 @@ export function WindowSelector({
   onChange: (hours: number) => void;
 }) {
   return (
-    <div className="inline-flex gap-0.5 rounded-lg border p-0.5">
-      {WINDOWS.map((window) => (
-        <Button
-          key={window.hours}
-          type="button"
-          size="sm"
-          variant={value === window.hours ? "default" : "ghost"}
-          onClick={() => onChange(window.hours)}
-        >
-          {window.label}
-        </Button>
-      ))}
+    <div className="inline-flex items-center gap-1 rounded-xl border bg-[#14161a] p-1">
+      {WINDOWS.map((window) => {
+        const active = value === window.hours;
+        return (
+          <button
+            key={window.hours}
+            type="button"
+            onClick={() => onChange(window.hours)}
+            className={cn(
+              "rounded-lg px-3 py-1 text-sm font-medium transition-colors",
+              active
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {window.label}
+          </button>
+        );
+      })}
     </div>
   );
 }

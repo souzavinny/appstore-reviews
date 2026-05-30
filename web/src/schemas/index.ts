@@ -16,6 +16,7 @@ export type Review = z.infer<typeof reviewSchema>;
 export const appSchema = z.object({
   id: z.string(),
   name: z.string().optional(),
+  iconUrl: z.string().optional(),
 });
 export type App = z.infer<typeof appSchema>;
 

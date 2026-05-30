@@ -15,10 +15,10 @@ function Stars({ score }: { score: number }) {
         <StarIcon
           key={n}
           className={cn(
-            "size-4",
+            "size-3.5",
             n <= score
-              ? "fill-yellow-400 text-yellow-400"
-              : "fill-muted text-muted-foreground/40",
+              ? "fill-primary text-primary"
+              : "fill-transparent text-muted-foreground/30",
           )}
         />
       ))}
@@ -28,11 +28,13 @@ function Stars({ score }: { score: number }) {
 
 export function ReviewCard({ review }: { review: Review }) {
   return (
-    <Card>
-      <CardContent className="space-y-2">
+    <Card className="rounded-2xl shadow-sm transition-colors hover:border-[#34373f]">
+      <CardContent className="space-y-3">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="truncate font-medium">{review.author}</p>
+            <p className="truncate font-medium text-foreground">
+              {review.author}
+            </p>
             <p className="text-xs text-muted-foreground">
               {formatAbsolute(review.submittedAt)} ·{" "}
               {formatRelative(review.submittedAt)}
@@ -40,7 +42,9 @@ export function ReviewCard({ review }: { review: Review }) {
           </div>
           <Stars score={review.score} />
         </div>
-        <p className="whitespace-pre-wrap text-sm">{review.content}</p>
+        <p className="whitespace-pre-wrap font-serif text-[15px] leading-relaxed text-foreground/90">
+          {review.content}
+        </p>
       </CardContent>
     </Card>
   );

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"sort"
+	"sync"
 	"time"
 
 	"github.com/souzavinny/reviews-api/internal/domain"
@@ -53,20 +54,37 @@ func (s *Service) GetRecentReviews(ctx context.Context, appID string, window tim
 	return recent, nil
 }
 
-// AddApp validates the app id against the live feed and registers it. The
-// initial poll is the caller's concern — the HTTP layer triggers it in the
-// background and the scheduler polls on each tick — so registration isn't
-// blocked on a feed round-trip.
+// AddApp validates the app id against the live feed and registers it, enriched
+// with store metadata (name, icon). Validation and the metadata lookup run
+// concurrently; the lookup is best-effort, so a failure leaves the app id-only.
+// The initial poll is the caller's concern — the HTTP layer triggers it in the
+// background and the scheduler polls on each tick.
 func (s *Service) AddApp(ctx context.Context, appID string) (domain.App, error) {
-	exists, err := s.fetcher.Exists(ctx, appID)
-	if err != nil {
-		return domain.App{}, fmt.Errorf("validate app %s: %w", appID, err)
+	var (
+		exists    bool
+		existsErr error
+		found     domain.App
+		wg        sync.WaitGroup
+	)
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		exists, existsErr = s.fetcher.Exists(ctx, appID)
+	}()
+	go func() {
+		defer wg.Done()
+		found, _ = s.fetcher.Lookup(ctx, appID) // best-effort enrichment
+	}()
+	wg.Wait()
+
+	if existsErr != nil {
+		return domain.App{}, fmt.Errorf("validate app %s: %w", appID, existsErr)
 	}
 	if !exists {
 		return domain.App{}, fmt.Errorf("%w: %s", ErrAppNotFound, appID)
 	}
 
-	app := domain.App{ID: appID}
+	app := domain.App{ID: appID, Name: found.Name, IconURL: found.IconURL}
 	if err := s.registry.Add(ctx, app); err != nil {
 		return domain.App{}, fmt.Errorf("add app %s: %w", appID, err)
 	}

@@ -1,6 +1,8 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { AddAppForm } from "@/components/AddAppForm";
+import { AppBanner } from "@/components/AppBanner";
 import { AppSelector } from "@/components/AppSelector";
+import { Pagination } from "@/components/Pagination";
 import { ReviewList } from "@/components/ReviewList";
 import { SummaryBar } from "@/components/SummaryBar";
 import { EmptyState, ErrorState, LoadingState } from "@/components/states";
@@ -12,6 +14,7 @@ import { useSummary } from "@/hooks/useSummary";
 import { errorMessage } from "@/lib/errors";
 
 const DEFAULT_HOURS = 48;
+const PAGE_SIZE = 20;
 
 export function ReviewsPage() {
   const {
@@ -39,6 +42,7 @@ export function ReviewsPage() {
     error: reviewsError,
   } = useReviews(selected, hours);
   const { summary } = useSummary(selected, hours);
+  const selectedApp = apps.find((app) => app.id === selected);
 
   async function handleRemove() {
     if (!selected) {
@@ -51,6 +55,25 @@ export function ReviewsPage() {
       setActionError(errorMessage(err));
     }
   }
+
+  // Display-only pagination over the full in-memory list (no API change).
+  const [page, setPage] = useState(0);
+  // Reset to the first page whenever the app or window changes — React's
+  // adjust-state-on-change pattern, so it also covers auto-selection.
+  const windowKey = `${selected ?? ""}:${hours}`;
+  const [prevWindowKey, setPrevWindowKey] = useState(windowKey);
+  if (windowKey !== prevWindowKey) {
+    setPrevWindowKey(windowKey);
+    setPage(0);
+  }
+
+  const totalPages = Math.max(1, Math.ceil(reviews.length / PAGE_SIZE));
+  // Clamp for display so a refresh that shrinks the list lands on the last page.
+  const currentPage = Math.min(page, totalPages - 1);
+  const visibleReviews = reviews.slice(
+    currentPage * PAGE_SIZE,
+    currentPage * PAGE_SIZE + PAGE_SIZE,
+  );
 
   let body: ReactNode;
   if (!selected) {
@@ -66,14 +89,27 @@ export function ReviewsPage() {
   } else if (reviews.length === 0) {
     body = <EmptyState message="No reviews in this window." />;
   } else {
-    body = <ReviewList reviews={reviews} />;
+    body = (
+      <div className="space-y-4">
+        <ReviewList reviews={visibleReviews} />
+        {totalPages > 1 && (
+          <Pagination
+            page={currentPage}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
+        )}
+      </div>
+    );
   }
 
   return (
     <div className="mx-auto flex min-h-svh w-full max-w-3xl flex-col gap-6 p-6">
       <header className="space-y-4">
         <div>
-          <h1 className="text-xl font-semibold">App Store reviews</h1>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">
+            App Store reviews
+          </h1>
           <p className="text-sm text-muted-foreground">
             Recent customer reviews, newest first.
           </p>
@@ -100,6 +136,7 @@ export function ReviewsPage() {
       </header>
 
       <main className="flex-1 space-y-4">
+        {selectedApp && <AppBanner key={selectedApp.id} app={selectedApp} />}
         {summary && <SummaryBar summary={summary} />}
         {body}
       </main>

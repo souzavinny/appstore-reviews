@@ -19,6 +19,8 @@ type ReviewStore interface {
 type ReviewFetcher interface {
 	Fetch(ctx context.Context, appID string) ([]domain.Review, error)
 	Exists(ctx context.Context, appID string) (bool, error)
+	// Lookup resolves an app id to its store metadata (name, icon).
+	Lookup(ctx context.Context, appID string) (domain.App, error)
 }
 
 // AppRegistry is the persisted set of apps to monitor.

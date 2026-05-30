@@ -37,7 +37,14 @@ type RSSFetcher struct {
 // NewRSSFetcher returns a fetcher with production defaults.
 func NewRSSFetcher() *RSSFetcher {
 	return &RSSFetcher{
-		client:   &http.Client{Timeout: requestTimeout},
+		client: &http.Client{
+			Timeout: requestTimeout,
+			// Apple's endpoints don't legitimately redirect; refusing keeps a
+			// poisoned redirect from pointing the fetch at an internal host.
+			CheckRedirect: func(*http.Request, []*http.Request) error {
+				return http.ErrUseLastResponse
+			},
+		},
 		baseURL:  defaultBaseURL,
 		maxPages: defaultMaxPages,
 		maxBytes: defaultMaxBytes,

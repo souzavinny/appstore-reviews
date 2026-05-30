@@ -311,6 +311,10 @@ func (f *fakeFetcher) Exists(ctx context.Context, appID string) (bool, error) {
 	return f.exists, nil
 }
 
+func (f *fakeFetcher) Lookup(ctx context.Context, appID string) (domain.App, error) {
+	return domain.App{}, nil
+}
+
 type fakeRegistry struct {
 	apps   map[string]domain.App
 	addErr error

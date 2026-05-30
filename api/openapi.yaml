@@ -208,7 +208,10 @@ components:
           type: string
         name:
           type: string
-          description: Optional display name.
+          description: Optional display name (from the iTunes Lookup API).
+        iconUrl:
+          type: string
+          description: Optional icon artwork URL (from the iTunes Lookup API).
 
     Summary:
       type: object

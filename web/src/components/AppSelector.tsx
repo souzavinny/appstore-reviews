@@ -16,10 +16,10 @@ export function AppSelector({
       value={value}
       onChange={(event) => onChange(event.target.value)}
       aria-label="Select app"
-      className="h-9 rounded-lg border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+      className="h-9 rounded-xl border border-input bg-card px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20"
     >
       {apps.map((app) => (
-        <option key={app.id} value={app.id}>
+        <option key={app.id} value={app.id} className="bg-card text-foreground">
           {app.name ?? app.id}
         </option>
       ))}
