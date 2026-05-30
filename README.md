@@ -204,6 +204,12 @@ cd web && bun run test       # frontend: ReviewCard render + useReviews hook (Vi
 - **UI niceties** — a selectable time window with silent auto-refresh, and client-side pagination.
 - **Swagger UI** at `/docs`.
 
+
+
+https://github.com/user-attachments/assets/464944d6-bb50-43e0-af2e-05e0327573e2
+
+
+
 ## Extend It
 
 - Generate the frontend Zod schemas from `openapi.yaml` so response shapes are contract-checked
